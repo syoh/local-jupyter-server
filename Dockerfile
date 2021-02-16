@@ -75,6 +75,8 @@ RUN pip install \
         cookiecutter==1.7.2 \
         jupyter_http_over_ws>=0.0.7 && \
     jupyter serverextension enable --py jupyter_http_over_ws && \
-    jupyter labextension install @jupyterlab/server-proxy && \
-    jupyter lab build
+    jupyter labextension install @jupyterlab/server-proxy
+
+RUN pip install jupyterlab_latex && \
+    jupyter labextension install @jupyterlab/latex
 
