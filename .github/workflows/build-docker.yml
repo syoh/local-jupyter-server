@@ -8,19 +8,24 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
 
-      - name: Set the value
-        id: step_one
+      - name: Set parameters
         run: |
-          echo "action_state=${{ github.sha }}" >> $GITHUB_ENV
+          echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
           echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Set derived parameters
+        run: |
+          echo "full_tag=${{ env.image_name }}:${{ env.short_sha }}" >> $GITHUB_ENV
 
       - name: Test value
         run: |
           echo ${{ env.action_state }}
           echo ${{ env.short_sha }}
+          echo ${{ env.full_tag }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -42,7 +47,7 @@ jobs:
           # platforms: linux/amd64,linux/arm64,linux/386
           platforms: linux/amd64
           push: true
-          tags: syoh/app:${{ env.short_sha }}
+          tags: ${{ env.image_name }}:${{ env.short_sha }}
 
       - name: Generate conda package lists
         run: |
