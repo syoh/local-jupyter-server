@@ -34,7 +34,7 @@ jobs:
           # platforms: linux/amd64,linux/arm64,linux/386
           platforms: linux/amd64
           push: true
-          tags: syoh/app:${GITHUB_SHA::7}
+          tags: "syoh/app:${GITHUB_SHA::7}"
 
       - name: Generate conda package lists
         run: |
