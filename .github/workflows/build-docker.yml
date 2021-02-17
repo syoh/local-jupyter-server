@@ -15,6 +15,12 @@ jobs:
         id: step_one
         run: |
           echo "action_state=${{ github.sha }}" >> $GITHUB_ENV
+          echo "action_short=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Test value
+        run: |
+          echo ${{ env.action_state }}
+          echo ${{ env.action_short }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
