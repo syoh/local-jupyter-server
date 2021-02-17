@@ -13,6 +13,9 @@ jobs:
         run: |
           echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
           echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Set derived parameters
+        run: |
           echo "full_tag=${{ env.image_name }}:${{ env.short_sha }}" >> $GITHUB_ENV
 
       - name: Test value
@@ -44,12 +47,12 @@ jobs:
           # platforms: linux/amd64,linux/arm64,linux/386
           platforms: linux/amd64
           push: true
-          tags: ${{ env.image_name }}:${{ env.short_sha }}
+          tags: ${{ env.full_tag }}
 
       - name: Generate conda package lists
         run: |
-          docker run -i --rm syoh/app:${{ env.short_sha }} bash -c 'conda list --explicit' > requirement.txt
-          docker run -i --rm syoh/app:${{ env.short_sha }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-gradescope-env/' | grep -v '^prefix' > environment.yml
+          docker run -i --rm ${{ env.full_tag }} bash -c 'conda list --explicit' > requirement.txt
+          docker run -i --rm ${{ env.full_tag }} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-gradescope-env/' | grep -v '^prefix' > environment.yml
           cat requirement.txt
           cat environment.yml
 
