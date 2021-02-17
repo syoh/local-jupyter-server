@@ -8,23 +8,23 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set up QEMU
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
+
+      - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -33,8 +33,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: syoh/app:${GITHUB_SHA::7}
-      - 
-				name: Generate conda package lists
+
+      - name: Generate conda package lists
         run: |
           docker run -i --rm syoh/app:${GITHUB_SHA::7} bash -c 'conda list --explicit' > requirement.txt
           docker run -i --rm syoh/app:${GITHUB_SHA::7} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-gradescope-env/' | grep -v '^prefix' > environment.yml
