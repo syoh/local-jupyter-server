@@ -26,20 +26,18 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v2
-        env:
-          GITHUB_SHA: ${{ github.sha }}
         with:
           context: .
           file: ./Dockerfile
           # platforms: linux/amd64,linux/arm64,linux/386
           platforms: linux/amd64
           push: true
-          tags: "syoh/app:${GITHUB_SHA::7}"
+          tags: syoh/app:${{ github.sha }}
 
       - name: Generate conda package lists
         run: |
-          docker run -i --rm syoh/app:${GITHUB_SHA::7} bash -c 'conda list --explicit' > requirement.txt
-          docker run -i --rm syoh/app:${GITHUB_SHA::7} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-gradescope-env/' | grep -v '^prefix' > environment.yml
+          docker run -i --rm syoh/app:${{ github.sha }} bash -c 'conda list --explicit' > requirement.txt
+          docker run -i --rm syoh/app:${GITHUB_SHA} bash -c 'conda env export -n base' | sed 's/name: base/name: otter-gradescope-env/' | grep -v '^prefix' > environment.yml
           cat requirement.txt
           cat environment.yml
 
