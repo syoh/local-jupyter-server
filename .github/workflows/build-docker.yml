@@ -13,9 +13,6 @@ jobs:
         run: |
           echo "image_name=syoh/local-jupyter-server" >> $GITHUB_ENV
           echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
-
-      - name: Set derived parameters
-        run: |
           echo "full_tag=${{ env.image_name }}:${{ env.short_sha }}" >> $GITHUB_ENV
 
       - name: Test value
