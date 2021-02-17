@@ -8,7 +8,7 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
-      
+
       -	name: Set Environment Variables
         run: |
           echo "GITHUB_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
