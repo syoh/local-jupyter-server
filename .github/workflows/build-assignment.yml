@@ -1,0 +1,124 @@
+name: Build grader image
+
+on:
+  push:
+    branches:
+      - 'assignment/**'
+      - 'lab/**'
+
+jobs:
+
+  build-grader:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Set parameters
+        run: |
+          echo "IMAGE=ucsb/gradescope-graders" >> $GITHUB_ENV
+          echo "BRANCH=$( echo ${{ github.ref }} | cut -d/ -f3- )" >> $GITHUB_ENV
+          echo "TYPE=$( echo ${{ github.ref }} | cut -d/ -f3 )" >> $GITHUB_ENV
+          echo "NUM=$( echo ${{ github.ref }} | cut -d/ -f4 )" >> $GITHUB_ENV
+          echo "short_sha=$( echo ${{ github.sha }} | cut -c1-7 )" >> $GITHUB_ENV
+
+      - name: Set derived parameters
+        run: |
+          echo "TAG=$( echo ${{ env.TYPE }} | cut -c1-2)${{ env.NUM }}:${{ env.short_sha }}" >> $GITHUB_ENV
+
+      - name: Test value
+        run: |
+          echo ${{ env.TAG}}
+          echo ${{ env.IMAGE }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+        ## - name: Set up QEMU
+        ##   uses: docker/setup-qemu-action@v1
+
+        ## - name: Set up Docker Buildx
+        ##   uses: docker/setup-buildx-action@v1
+
+        ## - name: Login to DockerHub
+        ##   uses: docker/login-action@v1
+        ##   with:
+        ##     username: ${{ secrets.DOCKER_USERNAME }}
+        ##     password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Latest environment.yml
+        uses: dddlab/fetch-gh-release-asset@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo: "UCSB-PSTAT-134/Fall2020-Private"
+          version: "latest"
+          file: "environment.yml"
+          token: "300a661baea0a43f3fa6d2da8774bb200aa7918c"
+
+      - name: Latest requirement.txt
+        uses: dddlab/fetch-gh-release-asset@master
+        with:
+          repo: "UCSB-PSTAT-134/Fall2020-Private"
+          version: "latest"
+          file: "requirement.txt"
+          token: "300a661baea0a43f3fa6d2da8774bb200aa7918c"
+
+      - name: Print stuff
+        run: |
+          echo environment.yml
+          echo requirement.txt
+
+          ##      - name: Build and push
+          ##        uses: docker/build-push-action@v2
+          ##        with:
+          ##          context: .
+          ##          file: ./Dockerfile
+          ##          # platforms: linux/amd64,linux/arm64,linux/386
+          ##          platforms: linux/amd64
+          ##          push: true
+          ##          tags: ${{ env.full_tag }}
+          ##      - run: |
+          ##          sudo apt-get install zip unzip
+          ##          echo "${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip"
+          ##          zip ${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip environment.yml
+          ##
+          ##      - name: Gradescope Dockerfile
+          ##        run: |
+          ##          mkdir -p build
+          ##          cat << EOF > build/Dockerfile
+          ##          FROM gradescope/auto-builds:ubuntu-18.04
+          ##
+          ##          RUN apt-get update && \
+          ##              apt-get install -y curl unzip dos2unix && \
+          ##              apt-get clean && \
+          ##              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          ##
+          ##          RUN mkdir -p /autograder/source
+          ##
+          ##          COPY ${TYPE}s/${TYPE}${NUM}/autograder/autograder.zip /tmp/autograder.zip
+          ##
+          ##          RUN unzip -d /autograder/source /tmp/autograder.zip
+          ##
+          ##          RUN cp /autograder/source/run_autograder /autograder/run_autograder
+          ##
+          ##          RUN dos2unix /autograder/run_autograder /autograder/source/setup.sh
+          ##
+          ##          RUN chmod +x /autograder/run_autograder
+          ##
+          ##          RUN apt-get update && \
+          ##              bash /autograder/source/setup.sh && \
+          ##              apt-get clean && \
+          ##              rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+          ##          EOF
+          ##
+          ##      - name: Build Gradescope image
+          ##        uses: docker/build-push-action@v1.1.0
+          ##        with:
+          ##          dockerfile: build/Dockerfile
+          ##          username: ${{ secrets.DOCKER_USERNAME }}
+          ##          password: ${{ secrets.DOCKER_PASSWORD }}
+          ##          repository: ${{ env.IMAGE}}
+          ##          tags: ${{ env.TAG }}
+          ##
+          ##      - name: Grader Docker image
+          ##        run: |
+          ##          echo "Grader image: ${IMAGE}:${TAG}"
