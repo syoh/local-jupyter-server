@@ -45,22 +45,18 @@ jobs:
         ##     password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Latest environment.yml
-        uses: dddlab/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo: "UCSB-PSTAT-134/Fall2020-Private"
           version: "latest"
           file: "environment.yml"
-          token: "300a661baea0a43f3fa6d2da8774bb200aa7918c"
 
       - name: Latest requirement.txt
-        uses: dddlab/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@master
         with:
-          repo: "UCSB-PSTAT-134/Fall2020-Private"
           version: "latest"
           file: "requirement.txt"
-          token: "300a661baea0a43f3fa6d2da8774bb200aa7918c"
 
       - name: Print stuff
         run: |
