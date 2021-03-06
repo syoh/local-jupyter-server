@@ -51,6 +51,15 @@ RUN \
     rm /tmp/rstudio.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN \
+    # install gh depdendencies
+    apt-get update && \
+    apt-get install -y --no-install-recommends software-properties-common gnupg && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0 && \
+    apt-add-repository https://cli.github.com/packages && \
+    apt update && \
+    apt install gh
+
 USER ${NB_USER}
 
 RUN pip install \
