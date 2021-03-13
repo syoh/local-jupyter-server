@@ -1,0 +1,8 @@
+FROM jupyter/scipy-notebook:aec555e49be6
+
+# Fix DL4006
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+USER ${NB_USER}
+
+RUN pip install cookiecutter==1.7.2
